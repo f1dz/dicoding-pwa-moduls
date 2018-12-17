@@ -1,0 +1,51 @@
+<script type="text/javascript">
+  var helloWorld = name => {
+    return new Promise((resolve, reject) => {
+      if (name === "" || name === undefined || name === null) {
+        reject("You have to provide the name!")
+      } else {
+        var msg = "Hello world, " + name;
+        resolve(msg);
+      }
+    })
+  }
+
+  //console.log(helloWorld("Bolang"));
+  
+  helloWorld("Bolang").then(result => {
+    console.log(result);
+  }).catch(error => {
+    console.error(error);
+  })
+
+  function addCodePolitan(msg) {
+    return msg + " from CodePolitan!";
+  }
+
+  helloWorld("bambang").then(result => {
+    return result;
+  }).then(result2 => {
+    var msg = addCodePolitan(result2);
+    console.log(msg);
+  }).catch(error => {
+    console.error(error);
+  });
+
+  // Promise All
+
+  var promises = Promise.all([
+    helloWorld("Bambang"),
+    helloWorld("X"),
+    helloWorld("Bolang").then(result => {
+      return result;
+    }).then(result2 => {
+      var message = addCodePolitan(result2);
+      return message;
+    })
+  ])
+
+  promises.then(results => {
+    console.log(results);
+  })
+
+</script>
