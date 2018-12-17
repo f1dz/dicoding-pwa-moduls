@@ -1,0 +1,43 @@
+<script type="text/javascript">
+  fetch("https://readerapi.codepolitan.com/articles")
+    .then(response => {
+      if (response.status != 200) {
+        console.log('Error : ' + response.status);
+        return Promise.reject(new Error(response.statusText));
+      } else {
+        return Promise.resolve(response);
+      }
+    }).then(response => {
+      return response.json()
+    }).then(data => {
+      console.log(data);
+    }).catch(err => {
+      console.log(err);
+    })
+
+  // Ekstrak kode
+  function status(response) {
+    if (response.status !== 200) {
+      console.log('Error : ' + response.status);
+      return Promise.reject(new Error(response.statusText));
+    } else {
+      return Promise.resolve(response);
+    }
+  }
+
+  var json = response => {
+    return response.json()
+  }
+
+  var error = error => {
+    console.log('Error: ' + error);
+  }
+
+  fetch("https://readerapi.codepolitan.com/articles")
+  .then(status)
+  .then(json)
+  .then(data => {
+    console.log(data);
+  }).catch(error);
+
+</script>

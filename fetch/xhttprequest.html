@@ -1,0 +1,12 @@
+<script type="text/javascript">
+  var request = new XMLHttpRequest();
+  request.onload = function () {
+    var data = JSON.parse(this.responseText);
+    console.log(data);
+  }
+  request.onerror = function () {
+    console.log('Error :-S', error);
+  }
+  request.open('get', 'https://readerapi.codepolitan.com/articles', true);
+  request.send();
+</script>
