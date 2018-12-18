@@ -1,0 +1,120 @@
+<html>
+
+<head></head>
+
+<body>
+  <script src="/js/idb.js"></script>
+  <script>
+    /*
+    Version 1
+    var dbPromise = idb.open('perpustakaan', 1, upgradeDb => {
+      if (!upgradeDb.objectStoreNames.contains('buku')) {
+        var people = upgradeDb.createObjectStore('buku', { keyPath: 'isbn' });
+        people.createIndex('judul', 'judul', { unique: false })
+        people.createIndex('nomorInduk', 'nomorInduk', { unique: true })
+      }
+    });
+    */
+
+    // With upgrade
+    var dbPromise = idb.open('perpustakaan', 2, upgradeDb => {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          upgradeDb.createObjectStore('buku', { keyPath: 'isbn' })
+        case 1:
+          var bukuStore = upgradeDb.transaction.objectStore('buku')
+          bukuStore.createIndex('tahun', 'tahun')
+      }
+    });
+
+    // insert
+    /*
+    dbPromise.then(db => {
+      var tx = db.transaction('buku', 'readwrite');
+      var store = tx.objectStore('buku');
+      var item = {
+        judul: "Membangun Progressive Web Apps (PWA)",
+        isbn: 887972528,
+        description: 'Membangun Progressive Web Apps',
+        createdAt: new Date().getTime()
+      }
+
+      store.add(item)
+      return tx.complete
+    }).then( () => {
+      console.log('Buku berhasil disimpan');
+    }).catch( () => {
+      console.error('Buku gagal disimpan');
+    });
+    */
+
+    // Membaca single row
+    dbPromise.then(db => {
+      var tx = db.transaction('buku', 'readonly');
+      var store = tx.objectStore('buku');
+
+      return store.get(12728726);
+    }).then(val => {
+      console.dir(val)
+    })
+
+    // Membaca banyak data
+    dbPromise.then(db => {
+      var tx = db.transaction('buku', 'readonly');
+      var store = tx.objectStore('buku');
+      return store.getAll();
+    }).then(items => {
+      console.dir(items);
+    });
+
+    // Membaca banyak data menggunakan cursor
+    dbPromise.then(db => {
+      var tx = db.transaction('buku', 'readonly');
+      var store = tx.objectStore('buku');
+      return store.openCursor()
+    }).then(function ambilBuku(cursor) {
+      if (!cursor) return;
+
+      console.log('Posisi cursor: ' + cursor.key);
+      for (var field in cursor.value) {
+        console.log(cursor.value[field]);
+      }
+      return cursor.continue().then(ambilBuku)
+    }).then(() => {
+      console.log('Tidak ada data lain');
+    });
+
+    // Update
+    dbPromise.then(db => {
+      var tx = db.transaction('buku', 'readwrite');
+      var store = tx.objectStore('buku');
+      var item = {
+        judul: 'Menjadi Android Developer Expert (MADE)',
+        isbn: 12728726,
+        description: 'Ini description untuk MADE',
+        createdAt: new Date().getTime()
+      }
+      store.put(item)
+      return tx.complete;
+    }).then(() => {
+      console.log('Buku berhasil disimpan');
+    }).catch(() => {
+      console.log('Buku gagal disimpan');
+    });
+
+    // Delete 
+    /*
+    dbPromise.then(db => {
+      var tx = db.transaction('buku', 'readwrite');
+      var store = tx.objectStore('buku');
+      store.delete(887972528)
+      return tx.complete
+    }).then(() => {
+      console.log('Item deleted');
+    })
+    */
+
+  </script>
+</body>
+
+</html>
